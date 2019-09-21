@@ -19,7 +19,7 @@ class Algorithm:
 
     vector_data = load_vectors("wiki-new-300d-1M.vec")
 
-    weights = {"good":1,"bad":1}
+    weights = {"good": 1, "bad": 1}
 
     def set_weights(self, weight_type, weight):
         self.weights[weight_type] = weight
@@ -77,18 +77,34 @@ class Algorithm:
         text_as_list = self.parse_for_list(initial_text)
         tuple_distances = self.do_stuff_comment(text_as_list)
         pos_sum = 0
-        neg_sum=0
+        neg_sum = 0
         for triplet in tuple_distances:
-            pos_sum+=triplet[0][0]+triplet[1][0]+triplet[2][0]
+            pos_sum += triplet[0][0] + triplet[1][0] + triplet[2][0]
             neg_sum += triplet[0][1] + triplet[1][1] + triplet[2][1]
         pos_score = pos_sum/(3*len(tuple_distances))/self.normalized[0][9]*2.5
         neg_score = neg_sum / (3 * len(tuple_distances)) / self.normalized[1][9] * 2.5
         prediction = 2.5+self.weights["good"]*pos_score-self.weights["bad"]*neg_score
+        if expected_score == -1:
+            return prediction
         self.machine_learning(prediction, expected_score)
 
-    def train(self,input):
-        for every line in input:
-            self.main(line[0],line[1])
+    def train(self):
+        with open("../HackRice9_Dataset/small_reviews_to_stars.txt", 'r') as f:
+            for line in f:
+                self.main(line[2:-7], float(line[-5:-2]))
+        f.close()
+
+    def run(self, txt_input):
+        self.main(txt_input, -1)
+    train()
+    run("Stopped by this location based on a recommendation from a friend. When I seen the number of reviews and the "
+        "rating I was very excited to try it out. So a couple things that I wish I would have known prior: 1. You wait "
+        "in line and when it's your turn to sit you have to place your order. 2. You don't get taken to a seat you "
+        "have to find one and they bring you your order. 3. They don't have Bloody Marys. Okay, so with that being "
+        "said, the meal was very good and the service was also acceptable. I'm not a fan of paying before I eat but "
+        "okay it's what you do.  What I can't understand is why no Bloody Marys?  I'm mean isn't it a part of a well "
+        "balanced brunch? So I'm really torn on this place. It was good but I think there's better brunch locations (at"
+        " least in my opinion) but it's worth a try, just remember #3")
 
     def determine_category(self, distance):
         if distance < self.normalized[0][0]:
