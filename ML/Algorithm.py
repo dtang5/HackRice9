@@ -19,7 +19,7 @@ class Algorithm:
 
     vector_data = load_vectors("wiki-new-300d-1M.vec")
 
-    weights = {}
+    weights = {"good":1,"bad":1}
 
     def set_weights(self, weight_type, weight):
         self.weights[weight_type] = weight
@@ -27,13 +27,11 @@ class Algorithm:
     num_comment = 1.0
 
     def machine_learning(self, predicted, expected):
-        change = (expected-predicted)/self.num_comment
+        change = 1+(expected-predicted)/5*100/self.num_comment
+        # the more comments the machine has looked at, the smaller influence a single comment should have on its weights
         self.num_comment += 1
-        Algorithm.set_weights(self, 'good', self.weights['good']+change)
-        Algorithm.set_weights(self, 'bad', self.weights['bad']-change)
-
-    good_score_weight = 1
-    bad_score_weight = 1
+        Algorithm.set_weights(self, 'good', self.weights['good']*change)
+        Algorithm.set_weights(self, 'bad', self.weights['bad']*change)
 
     @staticmethod
     def normalization(data):
@@ -73,9 +71,24 @@ class Algorithm:
     def parse_for_list(self, some_string):
         # Returns some_string as a list of 'words'
         # words include grammar shit.
+        return []
 
-    def main(self, initial_text):
+    def main(self, initial_text, expected_score):
+        text_as_list = self.parse_for_list(initial_text)
+        tuple_distances = self.do_stuff_comment(text_as_list)
+        pos_sum = 0
+        neg_sum=0
+        for triplet in tuple_distances:
+            pos_sum+=triplet[0][0]+triplet[1][0]+triplet[2][0]
+            neg_sum += triplet[0][1] + triplet[1][1] + triplet[2][1]
+        pos_score = pos_sum/(3*len(tuple_distances))/self.normalized[0][9]*2.5
+        neg_score = neg_sum / (3 * len(tuple_distances)) / self.normalized[1][9] * 2.5
+        prediction = 2.5+self.weights["good"]*pos_score-self.weights["bad"]*neg_score
+        self.machine_learning(prediction, expected_score)
 
+    def train(self,input):
+        for every line in input:
+            self.main(line[0],line[1])
 
     def determine_category(self, distance):
         if distance < self.normalized[0][0]:
