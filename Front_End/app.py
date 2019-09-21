@@ -16,4 +16,5 @@ def start():
 @app.route('/start', methods=['POST'])
 def start_post():
     mail = request.form['mail']
-    print mail
+    return render_template('rating.html', rating = mail)
+

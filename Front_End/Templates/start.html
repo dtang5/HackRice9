@@ -2,9 +2,9 @@
 {% block body %}
 <div class="jumbotron">
     <div class="container">
-        <form method="get">
-            <input type="text" name="mail" size="45">
-            <input type="submit" value="Submit">
+        <form action="/start" method="post">
+            <textarea name="mail" id="comments" style="width:96%;height:90px;border:none;padding:2%;font:22px/30px sans-serif;"></textarea>
+            <input type="submit" value="Submit" style="background-color:yellowgreen;color:white;padding:5px;font-size:18px;border:none;padding:8px;">
         </form>
     </div>
 </div>
