@@ -4,7 +4,6 @@ import io
 
 
 class Algorithm:
-
     def __init__(self):
         pass
 
@@ -70,6 +69,13 @@ class Algorithm:
                           Algorithm.assign_plus_minus_values_tuple(self, comment[index+1]),
                           Algorithm.assign_plus_minus_values_tuple(self, comment[index+2])))
         return scores
+
+    def parse_for_list(self, some_string):
+        # Returns some_string as a list of 'words'
+        # words include grammar shit.
+
+    def main(self, initial_text):
+
 
     def determine_category(self, distance):
         if distance < self.normalized[0][0]:
