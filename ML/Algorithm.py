@@ -73,7 +73,29 @@ class Algorithm:
     def parse_for_list(self, some_string):
         # Returns some_string as a list of 'words'
         # words include grammar shit.
+        special_char_list = ["!", '.', "?", "\'", ";", ":", ",", "(", ")", "\"", "-", "#", "%", "^", "&", "*", "`", "~",
+                             "{", "}", "[", "]", "\\", "+", "@", "$"]
+        word_list1 = some_string.split()
+        word_list2 = []
 
+        for word in word_list1:
+            check_once = False
+            for idx in range(len(word)):
+                if word[idx] in special_char_list:
+                    if idx == 0:
+                        word_list2.append(word[idx])
+                    elif idx >= len(word) - 2:
+                        if check_once:
+                            word_list2.append(word[1:idx])
+                        else:
+                            word_list2.append(word[0:idx])
+                        word_list2.append(word[idx:len(word)])
+                    check_once = True
+            if check_once == False:
+                word_list2.append(word)
+
+        return word_list2
+    
     def main(self, initial_text):
 
 
