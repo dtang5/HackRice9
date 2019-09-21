@@ -1,2 +1,3 @@
 Ideas for HackRice9 involving Algorithms and AI
 TDIDF KNN for comparing text documents and finding documents with a certain condition
+web app?
