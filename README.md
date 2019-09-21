@@ -1,3 +1,3 @@
-# HackRice9
+# Sentiment Analysis to Predict Ratings on Yelp
 A Data driven project :)
-Test dev
+Download Dataset Here: https://www.yelp.com/dataset
