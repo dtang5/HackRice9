@@ -17,6 +17,27 @@ class OtherMethods:
             data[tokens[0]] = map(float, tokens[1:])
         return data
 
+    @staticmethod
+    def assign_plus_minus_values_tuple(word1, vector_data):
+        good_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(vector_data[word1],
+                                                                            vector_data["good"])]))
+        bad_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(vector_data[word1],
+                                                                           vector_data["bad"])]))
+        return good_score, bad_score
+
+    @staticmethod
+    def normalization(data):
+        return [np.percentile(data, 10),
+                np.percentile(data, 20),
+                np.percentile(data, 30),
+                np.percentile(data, 40),
+                np.percentile(data, 50),
+                np.percentile(data, 60),
+                np.percentile(data, 70),
+                np.percentile(data, 80),
+                np.percentile(data, 90),
+                np.percentile(data, 100)]
+
 
 class Algorithm:
     def __init__(self):
@@ -38,39 +59,19 @@ class Algorithm:
         Algorithm.set_weights(self, 'good', self.weights['good'] * change)
         Algorithm.set_weights(self, 'bad', self.weights['bad'] * change)
 
-    # @staticmethod
-    def normalization(self, data):
-        return [np.percentile(data, 10),
-                np.percentile(data, 20),
-                np.percentile(data, 30),
-                np.percentile(data, 40),
-                np.percentile(data, 50),
-                np.percentile(data, 60),
-                np.percentile(data, 70),
-                np.percentile(data, 80),
-                np.percentile(data, 90),
-                np.percentile(data, 100)]
-
-    def assign_plus_minus_values_tuple(self, word1):
-        good_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(self.vector_data[word1],
-                                                                            self.vector_data["good"])]))
-        bad_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(self.vector_data[word1],
-                                                                           self.vector_data["bad"])]))
-        return good_score, bad_score
-
     list_plus = []
     list_minus = []
     for word in vector_data:
-        list_plus.append(assign_plus_minus_values_tuple(word)[0])
-        list_minus.append(assign_plus_minus_values_tuple(word)[1])
-    normalized = normalization(list_plus), normalization(list_plus)
+        list_plus.append(OtherMethods.assign_plus_minus_values_tuple(word, vector_data)[0])
+        list_minus.append(OtherMethods.assign_plus_minus_values_tuple(word, vector_data)[1])
+    normalized = OtherMethods.normalization(list_plus), OtherMethods.normalization(list_plus)
 
     def do_stuff_comment(self, comment):
         scores = []
         for index in range(len(comment) - 2):
-            scores.append((Algorithm.assign_plus_minus_values_tuple(self, comment[index]),
-                           Algorithm.assign_plus_minus_values_tuple(self, comment[index + 1]),
-                           Algorithm.assign_plus_minus_values_tuple(self, comment[index + 2])))
+            scores.append((OtherMethods.assign_plus_minus_values_tuple(self, comment[index]),
+                           OtherMethods.assign_plus_minus_values_tuple(self, comment[index + 1]),
+                           OtherMethods.assign_plus_minus_values_tuple(self, comment[index + 2])))
         return scores
 
     def parse_for_list(self, some_string):
@@ -123,6 +124,8 @@ class Algorithm:
     def run(self, txt_input):
         self.main(txt_input, -1)
 
+    def getweights(self):
+        return self.weights
     # train()
     # run("Stopped by this location based on a recommendation from a friend. When I seen the number of reviews and the "
     #    "rating I was very excited to try it out. So a couple things that I wish I would have known prior: 1. You wait "
@@ -195,3 +198,14 @@ algo.run("Stopped by this location based on a recommendation from a friend. When
          "balanced brunch? So I'm really torn on this place. It was good but I think there's better brunch locations "
          "(at"
          " least in my opinion) but it's worth a try, just remember #3")
+
+final_weights = algo.getweights()
+good_weight = str(final_weights["good"])
+bad_weight = str(final_weights["bad"])
+
+with open("result_weights.txt", 'w') as fi:
+    fi.write(good_weight)
+    fi.write(bad_weight)
+fi.close()
+
+
