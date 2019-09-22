@@ -19,9 +19,9 @@ class OtherMethods:
 
     @staticmethod
     def assign_plus_minus_values_tuple(word1, vector_data):
-        good_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(vector_data[word1],
+        good_score = np.linalg.norm(np.array([tup[0] - tup[1] for tup in zip(vector_data[word1],
                                                                             vector_data["good"])]))
-        bad_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(vector_data[word1],
+        bad_score = np.linalg.norm(np.array([tup[0] - tup[1] for tup in zip(vector_data[word1],
                                                                            vector_data["bad"])]))
         return good_score, bad_score
 
