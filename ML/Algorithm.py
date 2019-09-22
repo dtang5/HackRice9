@@ -19,10 +19,10 @@ class OtherMethods:
 
     @staticmethod
     def assign_plus_minus_values_tuple(word1, vector_data):
-        good_score = np.linalg.norm(np.array([tup[0] - tup[1] for tup in zip(vector_data[word1],
-                                                                            vector_data["good"])]))
-        bad_score = np.linalg.norm(np.array([tup[0] - tup[1] for tup in zip(vector_data[word1],
-                                                                           vector_data["bad"])]))
+        good_score = np.linalg.norm(np.array([(tup[0] - tup[1]) for tup in zip(vector_data[word1],
+                                                                             vector_data["good"])]))
+        bad_score = np.linalg.norm(np.array([(tup[0] - tup[1]) for tup in zip(vector_data[word1],
+                                                                            vector_data["bad"])]))
         return good_score, bad_score
 
     @staticmethod
@@ -69,9 +69,9 @@ class Algorithm:
     def do_stuff_comment(self, comment):
         scores = []
         for index in range(len(comment) - 2):
-            scores.append((OtherMethods.assign_plus_minus_values_tuple(self, comment[index]),
-                           OtherMethods.assign_plus_minus_values_tuple(self, comment[index + 1]),
-                           OtherMethods.assign_plus_minus_values_tuple(self, comment[index + 2])))
+            scores.append((OtherMethods.assign_plus_minus_values_tuple(comment[index], self.vector_data),
+                           OtherMethods.assign_plus_minus_values_tuple(comment[index + 1], self.vector_data),
+                           OtherMethods.assign_plus_minus_values_tuple(comment[index + 2], self.vector_data)))
         return scores
 
     def parse_for_list(self, some_string):
