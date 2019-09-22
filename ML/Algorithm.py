@@ -76,7 +76,7 @@ class Algorithm:
     def parse_for_list(self, some_string):
         # Returns some_string as a list of 'words'
         # words include grammar shit.
-        special_char_list = ["!", '.', "?", "\'", ";", ":", ",", "(", ")", "\"", "-", "#", "%", "^", "&", "*", "`", "~",
+        special_char_list = ["!", '.', "?", "\'", ";", ":", ",", "(", ")", "\"", "#", "%", "^", "&", "*", "`", "~",
                              "{", "}", "[", "]", "\\", "+", "@", "$"]
         word_list1 = some_string.split()
         word_list2 = []
