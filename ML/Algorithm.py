@@ -3,7 +3,7 @@ import numpy as np
 import io
 
 
-class Algorithm:
+class OtherMethods:
     def __init__(self):
         pass
 
@@ -17,9 +17,14 @@ class Algorithm:
             data[tokens[0]] = map(float, tokens[1:])
         return data
 
-    vector_data = load_vectors("wiki-new-300d-1M.vec")
 
-    weights = {}
+class Algorithm:
+    def __init__(self):
+        pass
+
+    vector_data = OtherMethods.load_vectors("wiki-news-300d-1M.vec")
+
+    weights = {"good": 1, "bad": 1}
 
     def set_weights(self, weight_type, weight):
         self.weights[weight_type] = weight
@@ -27,16 +32,14 @@ class Algorithm:
     num_comment = 1.0
 
     def machine_learning(self, predicted, expected):
-        change = (expected-predicted)/self.num_comment
+        change = 1 + (expected - predicted) / 5 * 100 / self.num_comment
+        # the more comments the machine has looked at, the smaller influence a single comment should have on its weights
         self.num_comment += 1
-        Algorithm.set_weights(self, 'good', self.weights['good']+change)
-        Algorithm.set_weights(self, 'bad', self.weights['bad']-change)
+        Algorithm.set_weights(self, 'good', self.weights['good'] * change)
+        Algorithm.set_weights(self, 'bad', self.weights['bad'] * change)
 
-    good_score_weight = 1
-    bad_score_weight = 1
-
-    @staticmethod
-    def normalization(data):
+    # @staticmethod
+    def normalization(self, data):
         return [np.percentile(data, 10),
                 np.percentile(data, 20),
                 np.percentile(data, 30),
@@ -49,10 +52,10 @@ class Algorithm:
                 np.percentile(data, 100)]
 
     def assign_plus_minus_values_tuple(self, word1):
-        good_score = np.linalg.norm(np.array([a_i-b_i for a_i, b_i in zip(self.vector_data[word1],
-                                                                          self.vector_data["good"])]))
-        bad_score = np.linalg.norm(np.array([a_i-b_i for a_i, b_i in zip(self.vector_data[word1],
-                                                                         self.vector_data["bad"])]))
+        good_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(self.vector_data[word1],
+                                                                            self.vector_data["good"])]))
+        bad_score = np.linalg.norm(np.array([a_i - b_i for a_i, b_i in zip(self.vector_data[word1],
+                                                                           self.vector_data["bad"])]))
         return good_score, bad_score
 
     list_plus = []
@@ -64,10 +67,10 @@ class Algorithm:
 
     def do_stuff_comment(self, comment):
         scores = []
-        for index in range(len(comment)-2):
+        for index in range(len(comment) - 2):
             scores.append((Algorithm.assign_plus_minus_values_tuple(self, comment[index]),
-                          Algorithm.assign_plus_minus_values_tuple(self, comment[index+1]),
-                          Algorithm.assign_plus_minus_values_tuple(self, comment[index+2])))
+                           Algorithm.assign_plus_minus_values_tuple(self, comment[index + 1]),
+                           Algorithm.assign_plus_minus_values_tuple(self, comment[index + 2])))
         return scores
 
     def parse_for_list(self, some_string):
@@ -96,8 +99,39 @@ class Algorithm:
 
         return word_list2
     
-    def main(self, initial_text):
+    def main(self, initial_text, expected_score):
+        text_as_list = self.parse_for_list(initial_text)
+        tuple_distances = self.do_stuff_comment(text_as_list)
+        pos_sum = 0
+        neg_sum = 0
+        for triplet in tuple_distances:
+            pos_sum += triplet[0][0] + triplet[1][0] + triplet[2][0]
+            neg_sum += triplet[0][1] + triplet[1][1] + triplet[2][1]
+        pos_score = pos_sum / (3 * len(tuple_distances)) / self.normalized[0][9] * 2.5
+        neg_score = neg_sum / (3 * len(tuple_distances)) / self.normalized[1][9] * 2.5
+        prediction = 2.5 + self.weights["good"] * pos_score - self.weights["bad"] * neg_score
+        if expected_score == -1:
+            return prediction
+        self.machine_learning(prediction, expected_score)
 
+    def train(self):
+        with open("../HackRice9_Dataset/small_reviews_to_stars.txt", 'r') as f:
+            for line in f:
+                self.main(line[2:-7], float(line[-5:-2]))
+        f.close()
+
+    def run(self, txt_input):
+        self.main(txt_input, -1)
+
+    # train()
+    # run("Stopped by this location based on a recommendation from a friend. When I seen the number of reviews and the "
+    #    "rating I was very excited to try it out. So a couple things that I wish I would have known prior: 1. You wait "
+    #    "in line and when it's your turn to sit you have to place your order. 2. You don't get taken to a seat you "
+    #    "have to find one and they bring you your order. 3. They don't have Bloody Marys. Okay, so with that being "
+    #    "said, the meal was very good and the service was also acceptable. I'm not a fan of paying before I eat but "
+    #    "okay it's what you do.  What I can't understand is why no Bloody Marys?  I'm mean isn't it a part of a well "
+    #    "balanced brunch? So I'm really torn on this place. It was good but I think there's better brunch locations (at"
+    #    " least in my opinion) but it's worth a try, just remember #3")
 
     def determine_category(self, distance):
         if distance < self.normalized[0][0]:
@@ -147,3 +181,17 @@ class Algorithm:
             category_bad = None
 
         return category_good, category_bad
+
+
+algo = Algorithm()
+algo.train()
+algo.run("Stopped by this location based on a recommendation from a friend. When I seen the number of reviews and the "
+         "rating I was very excited to try it out. So a couple things that I wish I would have known prior: 1. "
+         "You wait "
+         "in line and when it's your turn to sit you have to place your order. 2. You don't get taken to a seat you "
+         "have to find one and they bring you your order. 3. They don't have Bloody Marys. Okay, so with that being "
+         "said, the meal was very good and the service was also acceptable. I'm not a fan of paying before I eat but "
+         "okay it's what you do.  What I can't understand is why no Bloody Marys?  I'm mean isn't it a part of a well "
+         "balanced brunch? So I'm really torn on this place. It was good but I think there's better brunch locations "
+         "(at"
+         " least in my opinion) but it's worth a try, just remember #3")
